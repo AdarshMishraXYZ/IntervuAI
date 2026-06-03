@@ -1,5 +1,3 @@
-import uuid
-
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
@@ -11,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.database.session import get_db
 from app.models.interview import InterviewSession
 from app.models.interview import InterviewAnswer
+from app.models.resume import Resume
 
 router = APIRouter()
 
@@ -33,6 +32,10 @@ class SubmitAnswerRequest(BaseModel):
     answer: str
 
 
+class EndInterviewRequest(BaseModel):
+    session_id: str
+
+
 @router.post("/start")
 def start_interview(
     payload: StartInterviewRequest,
@@ -52,6 +55,8 @@ def start_interview(
         "question_number": 1,
         "question": QUESTIONS[0]
     }
+
+
 @router.post("/answer")
 def submit_answer(
     payload: SubmitAnswerRequest,
@@ -101,8 +106,6 @@ def submit_answer(
         "question_number": next_question_index + 1,
         "next_question": QUESTIONS[next_question_index]
     }
-class EndInterviewRequest(BaseModel):
-    session_id: str
 
 
 @router.post("/end")
@@ -157,14 +160,102 @@ def end_interview(
         ) / 3
     )
 
-    if overall_score >= 80:
-        recommendation = "Strong chances"
-    elif overall_score >= 65:
-        recommendation = "Good Chances"
-    elif overall_score >= 50:
-        recommendation = "Moderate Chances"
+    if overall_score >= 85:
+        readiness_level = "Strong Chances"
+
+    elif overall_score >= 70:
+        readiness_level = "Good Chances"
+
+    elif overall_score >= 55:
+        readiness_level = "Moderate Chances"
+
+    elif overall_score >= 40:
+        readiness_level = "Needs Improvement"
+
     else:
-        recommendation = "Need Improvement "
+        readiness_level = "Not Ready Yet"
+
+    strengths = []
+    areas_to_improve = []
+    next_steps = []
+
+    resume = db.query(Resume).order_by(
+        Resume.created_at.desc()
+    ).first()
+
+    if resume:
+        skills = resume.skills.lower()
+
+        if "python" in skills:
+            strengths.append(
+                "Strong Python foundation"
+            )
+
+        if "git" in skills or "github" in skills:
+            strengths.append(
+                "Good version control awareness"
+            )
+
+        if "javascript" in skills:
+            strengths.append(
+                "Full-stack development exposure"
+            )
+
+        if "sql" not in skills and "postgresql" not in skills:
+            areas_to_improve.append(
+                "Improve database and SQL fundamentals"
+            )
+
+    if technical_score >= 80:
+        strengths.append(
+            "Good technical understanding"
+        )
+    else:
+        areas_to_improve.append(
+            "Strengthen backend fundamentals"
+        )
+
+    if problem_solving_score >= 80:
+        strengths.append(
+            "Strong problem-solving potential"
+        )
+    else:
+        areas_to_improve.append(
+            "Practice structured problem solving"
+        )
+
+    if communication_score < 60:
+        areas_to_improve.append(
+            "Improve communication clarity and answer depth"
+        )
+
+        next_steps.append(
+            "Practice explaining projects out loud daily"
+        )
+    else:
+        strengths.append(
+            "Clear interview communication"
+        )
+
+    if overall_score >= 70:
+        next_steps.append(
+            "Start applying for internships while continuing DSA practice"
+        )
+    else:
+        next_steps.append(
+            "Focus on DSA, backend basics, and mock interviews before applying widely"
+        )
+
+    if "system design" not in areas_to_improve:
+        next_steps.append(
+            "Revise REST APIs, JWT, indexing, caching, and database transactions"
+        )
+
+    feedback = (
+        "Candidate shows promising technical potential. "
+        "The current readiness level is based on resume signals, interview answers, "
+        "technical depth, communication clarity, and problem-solving indicators."
+    )
 
     session.status = "completed"
     db.commit()
@@ -176,6 +267,10 @@ def end_interview(
         "communication_score": communication_score,
         "problem_solving_score": problem_solving_score,
         "overall_score": overall_score,
-        "recommendation": recommendation,
+        "readiness_level": readiness_level,
+        "strengths": strengths,
+        "areas_to_improve": areas_to_improve,
+        "next_steps": next_steps,
+        "feedback": feedback,
         "answers_evaluated": len(answers)
     }
