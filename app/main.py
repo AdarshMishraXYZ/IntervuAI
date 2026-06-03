@@ -6,6 +6,7 @@ from app.api.v1.health import router as health_router
 from app.api.v1.leetcode import router as leetcode_router
 from app.api.v1.candidate import router as candidate_router
 from app.api.v1.interview import router as interview_router
+from app.api.v1.interview_session import router as interview_session_router
 
 app = FastAPI(
     title="IntervuAI API",
@@ -49,6 +50,11 @@ app.include_router(
     interview_router,
     prefix="/api/v1/interview",
     tags=["Interview"]
+)
+app.include_router(
+    interview_session_router,
+    prefix="/api/v1/interview-session",
+    tags=["Interview Session"]
 )
 
 @app.get("/")
