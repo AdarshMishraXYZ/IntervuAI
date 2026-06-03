@@ -7,6 +7,7 @@ from app.models.leetcode_profile import LeetCodeProfile
 from alembic import context
 from app.models.interview import InterviewSession
 from app.models.interview import InterviewAnswer
+from app.models.interview_report import InterviewReport
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
