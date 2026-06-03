@@ -158,13 +158,13 @@ def end_interview(
     )
 
     if overall_score >= 80:
-        recommendation = "Strong Hire"
+        recommendation = "Strong chances"
     elif overall_score >= 65:
-        recommendation = "Hire"
+        recommendation = "Good Chances"
     elif overall_score >= 50:
-        recommendation = "Maybe"
+        recommendation = "Moderate Chances"
     else:
-        recommendation = "Reject"
+        recommendation = "Need Improvement "
 
     session.status = "completed"
     db.commit()
