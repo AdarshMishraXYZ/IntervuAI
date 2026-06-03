@@ -1,6 +1,6 @@
 from logging.config import fileConfig
 from app.models.resume import Resume
-
+from app.models.github_profile import GitHubProfile
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 

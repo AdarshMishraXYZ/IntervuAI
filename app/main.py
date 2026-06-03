@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.api.v1.github import router as github_router
 from app.api.v1.resume import router as resume_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.health import router as health_router
@@ -23,6 +24,11 @@ app.include_router(
     resume_router,
     prefix="/api/v1/resume",
     tags=["Resume"]
+)
+app.include_router(
+    github_router,
+    prefix="/api/v1/github",
+    tags=["GitHub"]
 )
 
 @app.get("/")
