@@ -3,7 +3,7 @@ from app.models.resume import Resume
 from app.models.github_profile import GitHubProfile
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
+from app.models.leetcode_profile import LeetCodeProfile
 from alembic import context
 
 # this is the Alembic Config object, which provides

@@ -3,6 +3,8 @@ from app.api.v1.github import router as github_router
 from app.api.v1.resume import router as resume_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.health import router as health_router
+from app.api.v1.leetcode import router as leetcode_router
+from app.api.v1.candidate import router as candidate_router
 
 app = FastAPI(
     title="IntervuAI API",
@@ -29,6 +31,18 @@ app.include_router(
     github_router,
     prefix="/api/v1/github",
     tags=["GitHub"]
+
+)
+app.include_router(
+    leetcode_router,
+    prefix="/api/v1/leetcode",
+    tags=["LeetCode"]
+
+)
+app.include_router(
+    candidate_router,
+    prefix="/api/v1/candidate",
+    tags=["Candidate"]
 )
 
 @app.get("/")
