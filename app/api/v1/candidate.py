@@ -16,6 +16,10 @@ from app.services.candidate_service import (
     get_candidate_level
 )
 
+from app.services.candidate_intelligence_service import (
+    generate_candidate_intelligence
+)
+
 router = APIRouter()
 
 
@@ -94,3 +98,66 @@ def candidate_summary(
             "codeforces": 10
         }
     }
+
+
+@router.get("/intelligence")
+def candidate_intelligence(
+    db: Session = Depends(get_db)
+):
+    resume = (
+        db.query(Resume)
+        .order_by(Resume.created_at.desc())
+        .first()
+    )
+
+    github = (
+        db.query(GitHubProfile)
+        .order_by(GitHubProfile.created_at.desc())
+        .first()
+    )
+
+    leetcode = (
+        db.query(LeetCodeProfile)
+        .order_by(LeetCodeProfile.created_at.desc())
+        .first()
+    )
+
+    codeforces = (
+        db.query(CodeforcesProfile)
+        .order_by(CodeforcesProfile.created_at.desc())
+        .first()
+    )
+
+    if not resume:
+        raise HTTPException(
+            status_code=404,
+            detail="Resume not found"
+        )
+
+    if not github:
+        raise HTTPException(
+            status_code=404,
+            detail="GitHub profile not found"
+        )
+
+    if not leetcode:
+        raise HTTPException(
+            status_code=404,
+            detail="LeetCode profile not found"
+        )
+
+    if not codeforces:
+        raise HTTPException(
+            status_code=404,
+            detail="Codeforces profile not found"
+        )
+
+    intelligence = generate_candidate_intelligence(
+        resume.resume_score,
+        github.github_score,
+        leetcode.leetcode_score,
+        codeforces.codeforces_score,
+        resume.skills
+    )
+
+    return intelligence
