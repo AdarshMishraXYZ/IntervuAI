@@ -1,14 +1,16 @@
 def calculate_overall_score(
     resume_score: int,
     github_score: int,
-    leetcode_score: int
+    leetcode_score: int,
+    codeforces_score: int
 ):
     return round(
         (
-            resume_score +
-            github_score +
-            leetcode_score
-        ) / 3
+            resume_score * 0.70 +
+            github_score * 0.10 +
+            leetcode_score * 0.10 +
+            codeforces_score * 0.10
+        )
     )
 
 

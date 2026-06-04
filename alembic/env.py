@@ -8,6 +8,7 @@ from alembic import context
 from app.models.interview import InterviewSession
 from app.models.interview import InterviewAnswer
 from app.models.interview_report import InterviewReport
+from app.models.codeforces_profile import CodeforcesProfile
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

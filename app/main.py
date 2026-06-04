@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.api.v1.codeforces import router as codeforces_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.candidate import router as candidate_router
 from app.api.v1.github import router as github_router
@@ -72,6 +72,12 @@ app.include_router(
     interview_session_router,
     prefix="/api/v1/interview-session",
     tags=["Interview Session"]
+
+)
+app.include_router(
+    codeforces_router,
+    prefix="/api/v1/codeforces",
+    tags=["Codeforces"]
 )
 
 
